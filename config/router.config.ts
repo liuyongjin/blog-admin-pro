@@ -20,7 +20,14 @@ export default [
                 name: 'welcome',
                 icon: 'smile',
                 component: './Welcome',
-            }
+            },
+            // article
+            {
+                path: '/article',
+                icon: 'container',
+                name: 'article',
+                component: './Article/ArticleAdmin',
+            },
         ],
     },
 ]
