@@ -35,7 +35,7 @@ const SelectLang: React.FC<SelectLangProps> = props => {
     </Menu>
   );
   return (
-    <HeaderDropdown overlay={langMenu} placement="bottomRight">
+    <HeaderDropdown overlay={langMenu} placement="bottomCenter">
       <span className={classNames(styles.dropDown, className)}>
         <Icon type="global" title={formatMessage({ id: 'navBar.lang' })} />
       </span>

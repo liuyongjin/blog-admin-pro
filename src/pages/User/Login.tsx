@@ -24,8 +24,6 @@ interface PAGE_NAME_UPPER_CAMEL_CASEState {
 export interface FromDataType {
   userName: string;
   password: string;
-  mobile: string;
-  captcha: string;
 }
 
 @connect(
@@ -51,7 +49,6 @@ class PAGE_NAME_UPPER_CAMEL_CASE extends Component<
   loginForm: FormComponentProps['form'] | undefined | null = undefined;
 
   state: PAGE_NAME_UPPER_CAMEL_CASEState = {
-    type: 'account',
     autoLogin: true,
   };
 
@@ -62,42 +59,17 @@ class PAGE_NAME_UPPER_CAMEL_CASE extends Component<
   };
 
   handleSubmit = (err: any, values: FromDataType) => {
-    const { type } = this.state;
     if (!err) {
       const { dispatch } = this.props;
       dispatch({
         type: 'BLOCK_NAME_CAMEL_CASE/login',
         payload: {
           ...values,
-          type,
         },
       });
     }
   };
 
-  onTabChange = (type: string) => {
-    this.setState({ type });
-  };
-
-  onGetCaptcha = () =>
-    new Promise((resolve, reject) => {
-      if (!this.loginForm) {
-        return;
-      }
-      this.loginForm.validateFields(['mobile'], {}, (err: any, values: FromDataType) => {
-        if (err) {
-          reject(err);
-        } else {
-          const { dispatch } = this.props;
-          ((dispatch({
-            type: 'BLOCK_NAME_CAMEL_CASE/getCaptcha',
-            payload: values.mobile,
-          }) as unknown) as Promise<any>)
-            .then(resolve)
-            .catch(reject);
-        }
-      });
-    });
 
   renderMessage = (content: string) => (
     <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
@@ -106,12 +78,11 @@ class PAGE_NAME_UPPER_CAMEL_CASE extends Component<
   render() {
     const { BLOCK_NAME_CAMEL_CASE, submitting } = this.props;
     const { status, type: loginType } = BLOCK_NAME_CAMEL_CASE;
-    const { type, autoLogin } = this.state;
+    const { autoLogin } = this.state;
     return (
       <div className={styles.main}>
         <LoginComponents
-          defaultActiveKey={type}
-          onTabChange={this.onTabChange}
+          defaultActiveKey="account"
           onSubmit={this.handleSubmit}
           ref={(form: any) => {
             this.loginForm = form;
@@ -125,7 +96,7 @@ class PAGE_NAME_UPPER_CAMEL_CASE extends Component<
                 formatMessage({ id: 'BLOCK_NAME.login.message-invalid-credentials' }),
               )}
             <UserName
-              name="userName"
+              name="username"
               placeholder={`${formatMessage({ id: 'BLOCK_NAME.login.userName' })}: admin or user`}
               rules={[
                 {
@@ -136,7 +107,7 @@ class PAGE_NAME_UPPER_CAMEL_CASE extends Component<
             />
             <Password
               name="password"
-              placeholder={`${formatMessage({ id: 'BLOCK_NAME.login.password' })}: ant.design`}
+              placeholder={`${formatMessage({ id: 'BLOCK_NAME.login.password' })}: 123`}
               rules={[
                 {
                   required: true,

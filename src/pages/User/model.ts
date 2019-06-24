@@ -1,12 +1,12 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 import { routerRedux } from 'dva/router';
-import { fakeAccountLogin, getFakeCaptcha } from './service';
-import { getPageQuery, setAuthority } from './utils/utils';
+import { fakeAccountLogin} from './service';
+import { getPageQuery, setAuthority,setToken } from './utils/utils';
 
 export interface StateType {
   status?: 'ok' | 'error';
-  type?: string;
+  // type?: string;
   currentAuthority?: 'user' | 'guest' | 'admin';
 }
 
@@ -42,7 +42,7 @@ const Model: ModelType = {
         payload: response,
       });
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.errorCode === 0) {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params as { redirect: string };
@@ -69,11 +69,20 @@ const Model: ModelType = {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      if(!payload.data){
+        setAuthority('guest');
+        setToken('');
+        return {
+          ...state,
+          status:'error'
+        }
+      }
+      setAuthority(payload.data.currentAuthority);
+      setToken(payload.data.token);
       return {
         ...state,
-        status: payload.status,
-        type: payload.type,
+        status: payload.errorCode?'error':'ok',
+        // type: payload.type,
       };
     },
   },

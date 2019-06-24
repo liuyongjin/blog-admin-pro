@@ -1,5 +1,4 @@
 import { ConnectProps, ConnectState } from '@/models/connect';
-import { Icon, Tooltip } from 'antd';
 
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
@@ -48,21 +47,7 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = props => {
           console.log('enter', value);
         }}
       />
-      <Tooltip
-        title={formatMessage({
-          id: 'component.globalHeader.help',
-        })}
-      >
-        <a
-          target="_blank"
-          href="https://pro.ant.design/docs/getting-started"
-          rel="noopener noreferrer"
-          className={styles.action}
-        >
-          <Icon type="question-circle-o" />
-        </a>
-      </Tooltip>
-      <Avatar />
+      <Avatar menu={true}/>
       <SelectLang className={styles.action} />
     </div>
   );

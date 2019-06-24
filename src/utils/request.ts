@@ -22,7 +22,7 @@ const codeMessage = {
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
 };
-
+const base_url="http://blog.com/api/v1"
 /**
  * 异常处理程序
  */
@@ -44,7 +44,24 @@ const errorHandler = (error: { response: Response }): void => {
  */
 const request = extend({
   errorHandler, // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
+  // credentials: 'include', // 默认请求是否带上cookie，
+  headers:{"Content-Type": "application/json;charset=UTF-8"}
+});
+const token=JSON.parse(localStorage.getItem('__BLOG__ADMIN__TOKEN__'))||'';
+// request interceptor, change url or options.
+request.interceptors.request.use((url, options) => {
+  return (
+    {
+      url: `${base_url}${url}`,
+      options: { 
+        ...options,
+        headers:{
+          ...options.headers,
+          'token':token
+        }
+      },
+    }
+  );
 });
 
 export default request;
