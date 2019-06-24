@@ -3,7 +3,7 @@
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
 import { extend } from 'umi-request';
-import { notification } from 'antd';
+import { message } from 'antd';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -22,7 +22,7 @@ const codeMessage = {
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
 };
-const base_url="http://blog.com/api/v1"
+const base_url = "http://blog.com/api/v1"
 /**
  * 异常处理程序
  */
@@ -31,11 +31,7 @@ const errorHandler = (error: { response: Response }): void => {
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
     const { status, url } = response;
-
-    notification.error({
-      message: `请求错误 ${status}: ${url}`,
-      description: errorText,
-    });
+    message.warning(`请求错误 ${status}: ${url}; ${errorText}`, 10)
   }
 };
 
@@ -45,23 +41,31 @@ const errorHandler = (error: { response: Response }): void => {
 const request = extend({
   errorHandler, // 默认错误处理
   // credentials: 'include', // 默认请求是否带上cookie，
-  headers:{"Content-Type": "application/json;charset=UTF-8"}
+  headers: { "Content-Type": "application/json;charset=UTF-8" }
 });
-const token=JSON.parse(localStorage.getItem('__BLOG__ADMIN__TOKEN__'))||'';
+const token = JSON.parse(window.localStorage.getItem('__BLOG__ADMIN__TOKEN__')) || '';
 // request interceptor, change url or options.
 request.interceptors.request.use((url, options) => {
   return (
     {
       url: `${base_url}${url}`,
-      options: { 
+      options: {
         ...options,
-        headers:{
+        headers: {
           ...options.headers,
-          'token':token
+          'token': token
         }
       },
     }
   );
 });
+
+request.interceptors.response.use(async (response) => {
+  const data = await response.clone().json()
+  if (~~data.errorCode === 1) {
+    message.warning(data.msg)
+  }
+  return response;
+})
 
 export default request;

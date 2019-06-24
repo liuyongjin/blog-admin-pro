@@ -1,17 +1,17 @@
 export interface TableListItem {
-  key: number;
-  disabled?: boolean;
-  href: string;
-  avatar: string;
-  name: string;
+  browse_count: number;
+  comment_count: number;
+  content: string;
+  create_time: string;
+  description: string;
+  id: number;
+  main_img: string;
+  praise_count: number;
+  // tags: object[];
+  tags: Array<object>;
   title: string;
-  owner: string;
-  desc: string;
-  callNo: number;
+  update_time: string;
   status: number;
-  updatedAt: Date;
-  createdAt: Date;
-  progress: number;
 }
 
 export interface TableListPagination {
@@ -20,7 +20,7 @@ export interface TableListPagination {
   current: number;
 }
 
-export interface TableListDate {
+export interface TableListType {
   list: TableListItem[];
   pagination: Partial<TableListPagination>;
 }
@@ -30,5 +30,5 @@ export interface TableListParams {
   status: string;
   name: string;
   pageSize: number;
-  currentPage: number;
+  current: number;
 }

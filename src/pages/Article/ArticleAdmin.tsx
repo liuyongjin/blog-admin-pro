@@ -21,7 +21,6 @@ import { FormComponentProps } from 'antd/es/form';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { SorterResult } from 'antd/es/table';
 import { connect } from 'dva';
-import moment from 'moment';
 import { StateType } from './model';
 import CreateForm from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
@@ -37,21 +36,21 @@ const getValue = (obj: { [x: string]: string[] }) =>
     .map(key => obj[key])
     .join(',');
 
-type IStatusMapType = 'default' | 'processing' | 'success' | 'error';
-const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['关闭', '运行中', '已上线', '异常'];
+type IStatusMapType = 0 | 1;
+const statusMap: any[] = ['default', 'processing'];
+const status = ['关闭', '显示'];
 const { RangePicker } = DatePicker;
 
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<any>;
   loading: boolean;
-  BLOCK_NAME_CAMEL_CASE: StateType;
+  article: StateType;
 }
 
 interface TableListState {
   modalVisible: boolean;
   updateModalVisible: boolean;
-  expandForm: boolean;
+  expandForm?: boolean;
   selectedRows: TableListItem[];
   formValues: { [key: string]: string };
   stepFormValues: Partial<TableListItem>;
@@ -60,17 +59,17 @@ interface TableListState {
 /* eslint react/no-multi-comp:0 */
 @connect(
   ({
-    BLOCK_NAME_CAMEL_CASE,
+    article,
     loading,
   }: {
-    BLOCK_NAME_CAMEL_CASE: StateType;
+    article: StateType;
     loading: {
       models: {
         [key: string]: boolean;
       };
     };
   }) => ({
-    BLOCK_NAME_CAMEL_CASE,
+    article,
     loading: loading.models.rule,
   }),
 )
@@ -85,25 +84,33 @@ class TableList extends Component<TableListProps, TableListState> {
 
   columns: StandardTableColumnProps[] = [
     {
-      title: '规则名称',
-      dataIndex: 'name',
-    },
-    {
+      title: '标题',
+      key: 'id',
+      dataIndex: 'title',
+      align: 'center',
+    }, {
       title: '描述',
-      dataIndex: 'desc',
-    },
-    {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
+      dataIndex: 'description',
+      align: 'center',
+    }, {
+      title: '主图',
+      dataIndex: 'main_img',
+      align: 'center',
+    }, {
+      title: '点赞数',
       sorter: true,
-      align: 'right',
-      render: (val: string) => `${val} 万`,
-      // mark to display a total number
-      needTotal: true,
+      dataIndex: 'praise_count',
+      align: 'center',
+    }, {
+      title: '浏览数',
+      sorter: true,
+      dataIndex: 'browse_count',
+      align: 'center',
     },
     {
       title: '状态',
       dataIndex: 'status',
+      align: 'center',
       filters: [
         {
           text: status[0],
@@ -112,33 +119,28 @@ class TableList extends Component<TableListProps, TableListState> {
         {
           text: status[1],
           value: '1',
-        },
-        {
-          text: status[2],
-          value: '2',
-        },
-        {
-          text: status[3],
-          value: '3',
-        },
+        }
       ],
-      render(val: IStatusMapType) {
-        return <Badge status={statusMap[val]} text={status[val]} />;
+      render(val) {
+        return <Badge status={statusMap[val as IStatusMapType]} text={status[val as IStatusMapType]} />;
       },
     },
     {
-      title: '上次调度时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      render: (val: string) => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      title: '更新时间',
+      align: 'center',
+      dataIndex: 'update_time',
+      sorter: true
     },
     {
       title: '操作',
-      render: (text, record) => (
+      align: 'center',
+      render: (item, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>
+          <Button className={styles.btn} type="primary" onClick={() => this.handleUpdateModalVisible(true, record)}>
+            配置
+          </Button>
           <Divider type="vertical" />
-          <a href="">订阅警报</a>
+          <Button className={styles.btn} type="danger" onClick={() => this.handleDel(item)}>删除</Button>
         </Fragment>
       ),
     },
@@ -147,7 +149,10 @@ class TableList extends Component<TableListProps, TableListState> {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'BLOCK_NAME_CAMEL_CASE/fetch',
+      type: 'article/fetch',
+    });
+    dispatch({
+      type: 'article/fetchTag',
     });
   }
 
@@ -166,7 +171,7 @@ class TableList extends Component<TableListProps, TableListState> {
     }, {});
 
     const params: Partial<TableListParams> = {
-      currentPage: pagination.current,
+      current: pagination.current,
       pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
@@ -176,7 +181,7 @@ class TableList extends Component<TableListProps, TableListState> {
     }
 
     dispatch({
-      type: 'BLOCK_NAME_CAMEL_CASE/fetch',
+      type: 'article/fetch',
       payload: params,
     });
   };
@@ -188,12 +193,21 @@ class TableList extends Component<TableListProps, TableListState> {
       formValues: {},
     });
     dispatch({
-      type: 'BLOCK_NAME_CAMEL_CASE/fetch',
+      type: 'article/fetch',
       payload: {},
     });
   };
 
 
+  handleDel(item:any){
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'article/del',
+      payload: {
+        id: item.id,
+      }
+    });
+  }
 
   handleMenuClick = (e: { key: string }) => {
     const { dispatch } = this.props;
@@ -201,17 +215,12 @@ class TableList extends Component<TableListProps, TableListState> {
 
     if (!selectedRows) return;
     switch (e.key) {
-      case 'remove':
+      case 'bdel':
         dispatch({
-          type: 'BLOCK_NAME_CAMEL_CASE/remove',
+          type: 'article/bdel',
           payload: {
-            key: selectedRows.map(row => row.key),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
+            ids: selectedRows.map(row => row.id),
+          }
         });
         break;
       default:
@@ -243,7 +252,7 @@ class TableList extends Component<TableListProps, TableListState> {
       });
 
       dispatch({
-        type: 'BLOCK_NAME_CAMEL_CASE/fetch',
+        type: 'article/fetch',
         payload: values,
       });
     });
@@ -265,7 +274,7 @@ class TableList extends Component<TableListProps, TableListState> {
   handleAdd = (fields: { desc: any }) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'BLOCK_NAME_CAMEL_CASE/add',
+      type: 'article/add',
       payload: {
         desc: fields.desc,
       },
@@ -278,7 +287,7 @@ class TableList extends Component<TableListProps, TableListState> {
   handleUpdate = (fields: FormValsType) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'BLOCK_NAME_CAMEL_CASE/update',
+      type: 'article/update',
       payload: {
         name: fields.name,
         desc: fields.desc,
@@ -293,6 +302,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   renderAdvancedForm() {
     const {
+      article: { tag },
       form: { getFieldDecorator },
     } = this.props;
     return (
@@ -315,10 +325,13 @@ class TableList extends Component<TableListProps, TableListState> {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="标签">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('tag_id')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">标签一</Option>
-                  <Option value="1">标签二</Option>
+                  {tag.map((v) => {
+                    return (
+                      <Option key={v.id} value={v.id}>{v.name}</Option>
+                    )
+                  })}
                 </Select>,
               )}
             </FormItem>
@@ -341,16 +354,6 @@ class TableList extends Component<TableListProps, TableListState> {
             </Button>
           </Col>
         </Row>
-        {/* <div style={{ overflow: 'hidden' }}>
-          <div style={{ float: 'right', marginBottom: 24 }}>
-            <Button type="primary" htmlType="submit">
-              查询
-            </Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-              重置
-            </Button>
-          </div>
-        </div> */}
       </Form>
     );
   }
@@ -361,7 +364,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      BLOCK_NAME_CAMEL_CASE: { data },
+      article: { data },
       loading,
       form,
     } = this.props;
@@ -369,8 +372,7 @@ class TableList extends Component<TableListProps, TableListState> {
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
+        <Menu.Item key="bdel">删除</Menu.Item>
       </Menu>
     );
 
@@ -393,7 +395,6 @@ class TableList extends Component<TableListProps, TableListState> {
               </Button>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button>批量操作</Button>
                   <Dropdown overlay={menu}>
                     <Button>
                       更多操作 <Icon type="down" />
@@ -405,6 +406,7 @@ class TableList extends Component<TableListProps, TableListState> {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
+              rowKey={item => item.id + ''}
               data={data}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
