@@ -21,6 +21,7 @@ export default {
   'menu.form.advanced-form': 'Advanced Form',
   'menu.list': 'List',
   'menu.article': 'Article Admin',
+  'menu.tag': 'Tag Admin',
   'menu.list.searchtable': 'Search Table',
   'menu.list.basic-list': 'Basic List',
   'menu.list.card-list': 'Card List',

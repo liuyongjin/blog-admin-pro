@@ -1,18 +1,10 @@
 export interface TableListItem {
   disabled?:boolean;
-  browse_count: number;
-  comment_count: number;
-  content: string;
   create_time: string;
-  description: string;
+  des: string;
   id: number;
-  main_img: string;
-  praise_count: number;
-  // tags: object[];
-  tags: Array<object>;
-  title: string;
+  name: string;
   update_time: string;
-  status: number;
 }
 
 export interface TableListPagination {

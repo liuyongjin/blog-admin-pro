@@ -28,6 +28,13 @@ export default [
                 name: 'article',
                 component: './Article/ArticleAdmin',
             },
+            // tag
+               {
+                path: '/tag',
+                icon: 'windows',
+                name: 'tag',
+                component: './Tag/TagAdmin',
+            },
         ],
     },
 ]
