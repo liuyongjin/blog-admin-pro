@@ -163,6 +163,13 @@ class WrapFormItem extends Component<LoginItemProps, LoginItemState> {
         </FormItem>
       );
     }
+    if(type==='Password'){
+      return (
+        <FormItem>
+          {getFieldDecorator(name, options)(<Input {...customProps} {...otherProps} autoComplete="on" />)}
+        </FormItem>
+      );
+    }
     return (
       <FormItem>
         {getFieldDecorator(name, options)(<Input {...customProps} {...otherProps} />)}

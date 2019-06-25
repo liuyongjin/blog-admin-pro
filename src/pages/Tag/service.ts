@@ -1,14 +1,17 @@
 // import request from 'umi-request';
 import request from '@/utils/request';
-import { TableListParams } from './data.d';
+import { TableListParams,addTagParams,TableListItem} from './data.d';
 
 export async function queryTag(params: TableListParams) {
   return request('/tag/index', {
-    params
+    method: 'POST',
+    data: {
+      ...params
+    },
   });
 }
 
-export async function delTag(params: TableListParams) {
+export async function delTag(params: {id:number}) {
   return request('/tag/del', {
     method: 'POST',
     data: {
@@ -17,7 +20,7 @@ export async function delTag(params: TableListParams) {
   });
 }
 
-export async function bdelTag(params: TableListParams) {
+export async function bdelTag(params:{ids:Array<number>}) {
   return request('/tag/bdel', {
     method: 'POST',
     data: {
@@ -26,22 +29,20 @@ export async function bdelTag(params: TableListParams) {
   });
 }
 
-export async function addTag(params: TableListParams) {
-  return request('/tag/bdel', {
+export async function addTag(params: addTagParams) {
+  return request('/tag/add', {
     method: 'POST',
     data: {
-      ...params,
-      method: 'post',
+      ...params
     },
   });
 }
 
-export async function updateTag(params: TableListParams) {
-  return request('/tag/bdel', {
+export async function updateTag(params: TableListItem) {
+  return request('/tag/edit', {
     method: 'POST',
     data: {
-      ...params,
-      method: 'update',
+      ...params
     },
   });
 }

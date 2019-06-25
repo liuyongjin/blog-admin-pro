@@ -6,10 +6,9 @@ import {
   Dropdown,
   Form,
   Icon,
-  Input,
   Menu,
+  Modal,
   Row,
-  Select,
   message,
 } from 'antd';
 import React, { Component, Fragment } from 'react';
@@ -21,14 +20,15 @@ import { SorterResult } from 'antd/es/table';
 import { connect } from 'dva';
 import { StateType } from './model';
 import CreateForm from './components/CreateForm';
-import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
-import UpdateForm, { FormValsType } from './components/UpdateForm';
+import StandardTable, { StandardTableColumnProps } from '@/components/StandardTable';
+import UpdateForm from './components/UpdateForm';
 import { TableListItem, TableListPagination, TableListParams } from './data.d';
+import { formatDate } from '@/utils/utils';
 
 import styles from './style.less';
 
 const FormItem = Form.Item;
-const { Option } = Select;
+const confirm = Modal.confirm;
 
 
 const { RangePicker } = DatePicker;
@@ -42,9 +42,9 @@ interface TableListProps extends FormComponentProps {
 interface TableListState {
   modalVisible: boolean;
   updateModalVisible: boolean;
-  expandForm?: boolean;
   selectedRows: TableListItem[];
-  formValues: { [key: string]: string };
+  formValues: { [key: string]: string[] };
+  params: Partial<TableListParams>;
   stepFormValues: Partial<TableListItem>;
 }
 
@@ -72,6 +72,9 @@ class TableList extends Component<TableListProps, TableListState> {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
+    params: {
+      create_date:[]
+    }
   };
 
   columns: StandardTableColumnProps[] = [
@@ -91,8 +94,7 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '创建时间',
       align: 'center',
-      dataIndex: 'create_time',
-      sorter: true
+      dataIndex: 'create_time'
     },
     {
       title: '更新时间',
@@ -115,9 +117,16 @@ class TableList extends Component<TableListProps, TableListState> {
   ];
 
   componentDidMount() {
+    this.init();
+  }
+  init() {
     const { dispatch } = this.props;
+    const { params } = this.state;
     dispatch({
       type: 'tag/fetch',
+      payload: {
+        ...params
+      }
     });
   }
 
@@ -127,28 +136,38 @@ class TableList extends Component<TableListProps, TableListState> {
     sorter: SorterResult<TableListItem>,
   ) => {
     const { dispatch } = this.props;
-    const { formValues } = this.state;
-    const params: Partial<TableListParams> = {
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
+    // type {sorter:string;create_time:string[]}
+    const cond: any = {
+      ...this.state.params
     };
-    console.log(params)
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+      cond.sorter = `${sorter.field} ${sorter.order}`;
+    }else{
+      delete cond.sorter;
     }
-
-    dispatch({
-      type: 'tag/fetch',
-      payload: params,
-    });
+    const p={
+      ...cond,
+      current: pagination.current,
+      pageSize: pagination.pageSize
+    }
+    this.setState({
+      params: p
+    }, () => {
+      dispatch({
+        type: 'tag/fetch',
+        payload: this.state.params,
+      });
+    })
   };
 
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     form.resetFields();
     this.setState({
-      formValues: {},
+      formValues: {
+        create_date: []
+      },
+      params: {}
     });
     dispatch({
       type: 'tag/fetch',
@@ -159,11 +178,25 @@ class TableList extends Component<TableListProps, TableListState> {
 
   handleDel(item: any) {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'tag/del',
-      payload: {
-        id: item.id,
-      }
+    confirm({
+      title: `确定删除该标签?`,
+      okText: '是的',
+      // okType: 'danger',
+      cancelText: '取消',
+      onOk:()=>{
+        dispatch({
+          type: 'tag/del',
+          payload: {
+            id: item.id
+          },
+          callback: () => {
+            this.init();
+          }
+        });
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
     });
   }
 
@@ -174,11 +207,24 @@ class TableList extends Component<TableListProps, TableListState> {
     if (!selectedRows) return;
     switch (e.key) {
       case 'bdel':
-        dispatch({
-          type: 'tag/bdel',
-          payload: {
-            ids: selectedRows.map(row => row.id),
-          }
+        confirm({
+          title: `确定删除${selectedRows.length}项标签?`,
+          okText: '是的',
+          cancelText: '取消',
+          onOk:()=>{
+            dispatch({
+              type: 'tag/bdel',
+              payload: {
+                ids: selectedRows.map(row => row.id),
+              },
+              callback: () => {
+                this.init();
+              }
+            });
+          },
+          onCancel() {
+            console.log('Cancel');
+          },
         });
         break;
       default:
@@ -195,23 +241,28 @@ class TableList extends Component<TableListProps, TableListState> {
   handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { dispatch, form } = this.props;
+    const { form } = this.props;
+    // const { params } = this.state;
 
-    form.validateFields((err, fieldsValue) => {
+    form.validateFields((err, fieldsValue: any) => {
       if (err) return;
-
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+      const values: any = {
+        create_date: [
+          formatDate(fieldsValue.create_date[0]),
+          formatDate(fieldsValue.create_date[1])
+        ]
       };
 
+      //保存搜索数据
       this.setState({
-        formValues: values
-      });
-
-      dispatch({
-        type: 'tag/fetch',
-        payload: values,
+        params: {
+          ...values
+        },
+        formValues:{
+          ...fieldsValue
+        }
+      },()=>{
+        this.init();
       });
     });
   };
@@ -222,41 +273,45 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
-  handleUpdateModalVisible = (flag?: boolean, record?: FormValsType) => {
+  handleUpdateModalVisible = (flag?: boolean, record?: Partial<TableListItem>) => {
     this.setState({
       updateModalVisible: !!flag,
       stepFormValues: record || {},
     });
   };
 
-  handleAdd = (fields: { desc: any }) => {
+  handleAdd = (fields: { name: string; des: string }) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'tag/add',
       payload: {
-        desc: fields.desc,
+        name: fields.name,
+        des: fields.des,
       },
+      callback: () => {
+        message.success('添加成功');
+        this.handleModalVisible();
+        this.init();
+      }
     });
-
-    message.success('添加成功');
-    this.handleModalVisible();
   };
 
-  handleUpdate = (fields: FormValsType) => {
+  handleUpdate = (fields: Partial<TableListItem>) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'tag/update',
       payload: {
         name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
+        des: fields.des,
+        id: fields.id,
       },
+      callback: () => {
+        message.success('编辑成功');
+        this.handleUpdateModalVisible();
+        this.init();
+      }
     });
-
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
   };
-
 
   renderAdvancedForm() {
     const {
@@ -265,27 +320,12 @@ class TableList extends Component<TableListProps, TableListState> {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="文章名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="状态">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">显示</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={16} sm={24}>
-            <FormItem label="更新日期">
-              {getFieldDecorator('date')(
-                <RangePicker style={{ width: '100%' }} />
+            <FormItem label="创建日期">
+              {getFieldDecorator('create_date', {
+                initialValue: this.state.formValues.create_date
+              })(
+                <RangePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
               )}
             </FormItem>
           </Col>
@@ -361,7 +401,7 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} form={form} />
+        <CreateForm {...parentMethods} modalVisible={modalVisible} />
         {stepFormValues && Object.keys(stepFormValues).length ? (
           <UpdateForm
             {...updateMethods}

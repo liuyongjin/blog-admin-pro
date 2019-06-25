@@ -4,7 +4,8 @@
  */
 import { extend } from 'umi-request';
 import { message } from 'antd';
-
+import router from 'umi/router';
+import {getToken} from '@/utils/utils';
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -43,9 +44,10 @@ const request = extend({
   // credentials: 'include', // 默认请求是否带上cookie，
   headers: { "Content-Type": "application/json;charset=UTF-8" }
 });
-const token = JSON.parse(window.localStorage.getItem('__BLOG__ADMIN__TOKEN__')) || '';
+
 // request interceptor, change url or options.
 request.interceptors.request.use((url, options) => {
+  const token = getToken();
   return (
     {
       url: `${base_url}${url}`,
@@ -62,8 +64,11 @@ request.interceptors.request.use((url, options) => {
 
 request.interceptors.response.use(async (response) => {
   const data = await response.clone().json()
-  if (~~data.errorCode === 1) {
+  if (~~data.errorCode !== 0) {
     message.warning(data.msg)
+    if(~~data.errorCode===999){
+      router.push('/user/login');
+    }
   }
   return response;
 })

@@ -2,7 +2,7 @@ import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 import { routerRedux } from 'dva/router';
 import { fakeAccountLogin} from './service';
-import { getPageQuery, setAuthority,setToken } from './utils/utils';
+import { getPageQuery, setAuthority,setToken } from '@/utils/utils';
 
 export interface StateType {
   status?: 'ok' | 'error';
@@ -20,7 +20,6 @@ export interface ModelType {
   state: StateType;
   effects: {
     login: Effect;
-    getCaptcha: Effect;
   };
   reducers: {
     changeLoginStatus: Reducer<StateType>;
@@ -60,10 +59,6 @@ const Model: ModelType = {
         }
         yield put(routerRedux.replace(redirect || '/'));
       }
-    },
-
-    *getCaptcha({ payload }, { call }) {
-      yield call(getFakeCaptcha, payload);
     },
   },
 

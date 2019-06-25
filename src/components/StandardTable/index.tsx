@@ -22,18 +22,32 @@ export interface StandardTableColumnProps extends ColumnProps<TableListItem> {
   total?: number;
 }
 
-
+function initTotalList(columns: StandardTableColumnProps[]) {
+  if (!columns) {
+    return [];
+  }
+  const totalList: StandardTableColumnProps[] = [];
+  columns.forEach(column => {
+    if (column.needTotal) {
+      totalList.push({ ...column, total: 0 });
+    }
+  });
+  return totalList;
+}
 
 interface StandardTableState {
   selectedRowKeys: string[];
+  needTotalList: StandardTableColumnProps[];
 }
 
 class StandardTable extends Component<StandardTableProps<TableListItem>, StandardTableState> {
   static getDerivedStateFromProps(nextProps: StandardTableProps<TableListItem>) {
     // clean state
     if (nextProps.selectedRows.length === 0) {
+      const needTotalList = initTotalList(nextProps.columns);
       return {
         selectedRowKeys: [],
+        needTotalList,
       };
     }
     return null;
@@ -41,9 +55,12 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
 
   constructor(props: StandardTableProps<TableListItem>) {
     super(props);
+    const { columns } = props;
+    const needTotalList = initTotalList(columns);
 
     this.state = {
       selectedRowKeys: [],
+      needTotalList,
     };
   }
 
@@ -52,12 +69,17 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
     selectedRows: TableListItem[],
   ) => {
     const currySelectedRowKeys = selectedRowKeys as string[];
+    let { needTotalList } = this.state;
+    needTotalList = needTotalList.map(item => ({
+      ...item,
+      total: selectedRows.reduce((sum, val) => sum + parseFloat(val[item.dataIndex || 0]), 0),
+    }));
     const { onSelectRow } = this.props;
     if (onSelectRow) {
       onSelectRow(selectedRows);
     }
 
-    this.setState({ selectedRowKeys: currySelectedRowKeys});
+    this.setState({ selectedRowKeys: currySelectedRowKeys, needTotalList });
   };
 
   handleTableChange: TableProps<TableListItem>['onChange'] = (
@@ -79,7 +101,7 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
   };
 
   render() {
-    const { selectedRowKeys} = this.state;
+    const { selectedRowKeys, needTotalList } = this.state;
     const { data, rowKey, ...rest } = this.props;
     const { list = [], pagination = false } = data || {};
 
@@ -104,6 +126,17 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
             message={
               <Fragment>
                 已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
+                {needTotalList.map((item, index) => (
+                  <span style={{ marginLeft: 8 }} key={item.dataIndex}>
+                    {item.title}
+                    总计&nbsp;
+                    <span style={{ fontWeight: 600 }}>
+                      {item.render
+                        ? item.render(item.total, item as TableListItem, index)
+                        : item.total}
+                    </span>
+                  </span>
+                ))}
                 <a onClick={this.cleanSelectedKeys} style={{ marginLeft: 24 }}>
                   清空
                 </a>

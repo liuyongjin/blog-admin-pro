@@ -46,33 +46,21 @@ const Model: ModelType = {
         payload: response,
       });
     },
-    *add({ payload, callback }, { call, put }) {
-      const response = yield call(addTag, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+    *add({ payload, callback }, { call}) {
+      yield call(addTag, payload);
+      callback && callback();
     },
-    *del({ payload }, { call, put }) {
+    *del({ payload, callback }, { call }) {
       yield call(delTag, payload);
-      yield put({
-        type: 'fetch',
-      });
+      callback && callback();
     },
-    *bdel({ payload }, { call, put }) {
+    *bdel({ payload, callback }, { call}) {
       yield call(bdelTag, payload);
-      yield put({
-        type: 'fetch',
-      });
+      callback && callback();
     },
-    *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateTag, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+    *update({ payload, callback }, { call}) {
+      yield call(updateTag, payload);
+      callback && callback();
     },
   },
 

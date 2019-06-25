@@ -19,9 +19,14 @@ export interface TableListType {
 }
 
 export interface TableListParams {
-  sorter: string;
-  status: string;
-  name: string;
+  create_date?:string[];
   pageSize: number;
   current: number;
+  sorter: string;
 }
+
+export interface addTagParams {
+  name: string;
+  des: string;
+}
+
