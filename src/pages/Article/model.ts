@@ -58,32 +58,20 @@ const Model: ModelType = {
       });
     },
     *add({ payload, callback }, { call, put }) {
-      const response = yield call(addArticle, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      yield call(addArticle, payload);
+      callback && callback();
     },
-    *del({ payload }, { call, put }) {
+    *del({ payload ,callback}, { call, put }) {
       yield call(delArticle, payload);
-      yield put({
-        type: 'fetch',
-      });
+      callback && callback();
     },
-    *bdel({ payload }, { call, put }) {
+    *bdel({ payload,callback }, { call, put }) {
       yield call(bdelArticle, payload);
-      yield put({
-        type: 'fetch',
-      });
+      callback && callback();
     },
     *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateArticle, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      yield call(updateArticle, payload);
+      callback && callback();
     },
   },
 

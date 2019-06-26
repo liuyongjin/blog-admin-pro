@@ -4,12 +4,17 @@ import { TableListParams } from './data.d';
 
 export async function queryArticle(params: TableListParams) {
   return request('/article/index', {
-    params,
+    method: 'POST',
+    data: {
+      ...params
+    }
   });
 }
 
 export async function queryTag() {
-  return request('/tag/index');
+  return request('/tag/index', {
+    method: 'POST',
+  });
 }
 
 export async function delArticle(params: TableListParams) {

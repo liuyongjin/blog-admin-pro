@@ -43,7 +43,7 @@ interface TableListState {
   modalVisible: boolean;
   updateModalVisible: boolean;
   selectedRows: TableListItem[];
-  formValues: { [key: string]: string[] };
+  formValues: { [key: string]: string[]|string };
   params: Partial<TableListParams>;
   stepFormValues: Partial<TableListItem>;
 }
@@ -73,7 +73,7 @@ class TableList extends Component<TableListProps, TableListState> {
     formValues: {},
     stepFormValues: {},
     params: {
-      create_date:[]
+      // create_date:[]
     }
   };
 
@@ -165,7 +165,7 @@ class TableList extends Component<TableListProps, TableListState> {
     form.resetFields();
     this.setState({
       formValues: {
-        create_date: []
+        // create_date: []
       },
       params: {}
     });
@@ -219,6 +219,9 @@ class TableList extends Component<TableListProps, TableListState> {
               },
               callback: () => {
                 this.init();
+                this.setState({
+                  selectedRows:[]
+                })
               }
             });
           },
@@ -323,7 +326,8 @@ class TableList extends Component<TableListProps, TableListState> {
           <Col md={16} sm={24}>
             <FormItem label="创建日期">
               {getFieldDecorator('create_date', {
-                initialValue: this.state.formValues.create_date
+                initialValue: this.state.formValues.create_date,
+                rules: [{ required: true, message: '请选择日期'}]
               })(
                 <RangePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
               )}
