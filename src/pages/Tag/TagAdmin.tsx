@@ -291,8 +291,8 @@ class TableList extends Component<TableListProps, TableListState> {
         name: fields.name,
         des: fields.des,
       },
-      callback: () => {
-        message.success('添加成功');
+      callback: (response:any) => {
+        message.success(response.msg);
         this.handleModalVisible();
         this.init();
       }
@@ -308,8 +308,8 @@ class TableList extends Component<TableListProps, TableListState> {
         des: fields.des,
         id: fields.id,
       },
-      callback: () => {
-        message.success('编辑成功');
+      callback: (response:any) => {
+        message.success(response.msg);
         this.handleUpdateModalVisible();
         this.init();
       }

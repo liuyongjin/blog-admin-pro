@@ -4,8 +4,8 @@ export interface TableListItem {
   comment_count: number;
   content: string;
   create_time: string;
-  description: string;
-  id: number;
+  des: string;
+  id?: number;
   main_img: string;
   praise_count: number;
   // tags: object[];

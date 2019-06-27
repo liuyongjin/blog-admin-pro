@@ -17,6 +17,11 @@ interface CreateFormProps extends FormComponentProps {
   ) => void;
   handleModalVisible: () => void;
 }
+const formLayout = {
+  labelCol: { span: 7 },
+  wrapperCol: { span: 17 },
+};
+
 
 const CreateForm: React.SFC<CreateFormProps> = props => {
   const { modalVisible, form, handleAdd, handleModalVisible } = props;
@@ -35,12 +40,12 @@ const CreateForm: React.SFC<CreateFormProps> = props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 17 }} label="名称">
+      <FormItem {...formLayout} label="名称">
         {form.getFieldDecorator('name', {
           rules: [{ required: true, message: '请输入至少三个字符的名称!', min: 3 }],
         })(<Input placeholder="请输入" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 17 }} label="描述">
+      <FormItem {...formLayout} label="描述">
         {form.getFieldDecorator('des', {
           rules: [{ required: true, message: '请输入至少三个字符的描述!', min: 3 }],
         })(<Input placeholder="请输入" />)}

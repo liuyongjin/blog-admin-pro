@@ -1,5 +1,5 @@
 import {
-  Badge,
+  Switch,
   Button,
   Card,
   Col,
@@ -22,9 +22,9 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { SorterResult } from 'antd/es/table';
 import { connect } from 'dva';
 import { StateType } from './model';
-import CreateForm from './components/CreateForm';
+import CreateForm,{fieldsValue} from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from '@/components/StandardTable';
-import UpdateForm, { FormValsType } from './components/UpdateForm';
+import UpdateForm from './components/UpdateForm';
 import { TableListItem, TableListPagination, TableListParams } from './data.d';
 import { formatDate } from '@/utils/utils';
 
@@ -38,9 +38,9 @@ const getValue = (obj: { [x: string]: string[] }) =>
     .map(key => obj[key])
     .join(',');
 
-type IStatusMapType = 0 | 1;
-const statusMap: any[] = ['default', 'processing'];
-const status = ['关闭', '显示'];
+// type IStatusMapType = 0 | 1;
+// const statusMap: any[] = ['default', 'processing'];
+// const status = ['关闭', '显示'];
 const { RangePicker } = DatePicker;
 
 interface TableListProps extends FormComponentProps {
@@ -85,21 +85,39 @@ class TableList extends Component<TableListProps, TableListState> {
     params: {
     }
   };
-
+  statusChangeHandle=(val:boolean,record:any)=>{
+    this.props.dispatch({
+      type: 'article/updateStatus',
+      payload: {
+        id: record.id,
+        status:val===false?0:1
+      },
+      callback: () => {
+        this.init();
+      }
+    });
+  }
   columns: StandardTableColumnProps[] = [
     {
+      title: 'ID',
+      dataIndex: 'id',
+      align: 'center',
+    },
+    {
       title: '标题',
-      key: 'id',
       dataIndex: 'title',
       align: 'center',
     }, {
       title: '描述',
-      dataIndex: 'description',
+      dataIndex: 'des',
       align: 'center',
     }, {
       title: '主图',
       dataIndex: 'main_img',
       align: 'center',
+      render(val:any) {
+        return <img style={{width:100,height:100}} src={'http://blog.com'+val} alt="图片"/>;
+      }
     }, {
       title: '点赞数',
       dataIndex: 'praise_count',
@@ -114,9 +132,11 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '状态',
       dataIndex: 'status',
       align: 'center',
-      render(val) {
-        return <Badge status={statusMap[val as IStatusMapType]} text={status[val as IStatusMapType]} />;
-      },
+      render:(val,record) =>(
+        <>
+          <Switch checked={val===0?false:true} onChange={(e) => this.statusChangeHandle(e,record)} />
+        </>
+      ),
     },
     // {
     //   title: '标签',
@@ -317,42 +337,48 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
-  handleUpdateModalVisible = (flag?: boolean, record?: FormValsType) => {
+  handleUpdateModalVisible = (flag?: boolean, record?: Partial<TableListItem>) => {
     this.setState({
       updateModalVisible: !!flag,
       stepFormValues: record || {},
     });
   };
 
-  handleAdd = (fields: { des: any }) => {
+  handleAdd = (fieldsValue: fieldsValue) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'article/add',
-      payload: {
-        des: fields.des,
-      },
+      payload: fieldsValue,
+      callback: (response:any) => {
+        message.success(response.msg);
+        this.handleModalVisible();
+        this.init();
+      }
     });
-
-    message.success('添加成功');
-    this.handleModalVisible();
   };
 
-  handleUpdate = (fields: FormValsType) => {
+  handleUpdate = (fieldsValue: fieldsValue) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'article/update',
-      // payload: {
-      //   name: fields.name,
-      //   des: fields.des,
-      //   key: fields.key,
-      // },
+      payload: fieldsValue,
+      callback: (response:any) => {
+        message.success(response.msg);
+        this.handleUpdateModalVisible();
+        this.init();
+      }
     });
-
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
   };
 
-
+  tagScrollHandle=(e:any)=>{
+    e.persist();
+    const { target } = e;
+    if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+      this.props.dispatch({
+        type: 'article/fetchTag',
+      });
+    }
+  }
   renderAdvancedForm() {
     const {
       article: { tag },
@@ -379,7 +405,7 @@ class TableList extends Component<TableListProps, TableListState> {
           <Col md={8} sm={24}>
             <FormItem label="标签">
               {getFieldDecorator('tags_id')(
-                <Select mode="multiple" placeholder="请选择" style={{ width: '100%' }}>
+                <Select mode="multiple" onPopupScroll={this.tagScrollHandle}  placeholder="请选择" style={{ width: '100%' }}>
                   {tag.map((v) => {
                     return (
                       <Option key={v.id} value={v.id}>{v.name}</Option>
@@ -424,7 +450,6 @@ class TableList extends Component<TableListProps, TableListState> {
     const {
       article: { data },
       loading,
-      form,
     } = this.props;
 
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
@@ -472,13 +497,14 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} />
+        <CreateForm {...parentMethods} modalVisible={modalVisible} article={this.props.article} dispatch={this.props.dispatch} />
         {stepFormValues && Object.keys(stepFormValues).length ? (
           <UpdateForm
             {...updateMethods}
             updateModalVisible={updateModalVisible}
             values={stepFormValues}
-            form={form}
+            article={this.props.article}
+            dispatch={this.props.dispatch}
           />
         ) : null}
       </PageHeaderWrapper>

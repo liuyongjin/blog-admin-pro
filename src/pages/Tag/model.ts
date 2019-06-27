@@ -47,8 +47,8 @@ const Model: ModelType = {
       });
     },
     *add({ payload, callback }, { call}) {
-      yield call(addTag, payload);
-      callback && callback();
+      const response =yield call(addTag, payload);
+      callback && callback(response);
     },
     *del({ payload, callback }, { call }) {
       yield call(delTag, payload);
@@ -59,8 +59,8 @@ const Model: ModelType = {
       callback && callback();
     },
     *update({ payload, callback }, { call}) {
-      yield call(updateTag, payload);
-      callback && callback();
+      const response = yield call(updateTag, payload);
+      callback && callback(response);
     },
   },
 

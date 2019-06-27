@@ -2,7 +2,7 @@ export interface TableListItem {
   disabled?:boolean;
   create_time: string;
   des: string;
-  id: number;
+  id?: number;
   name: string;
   update_time: string;
 }
