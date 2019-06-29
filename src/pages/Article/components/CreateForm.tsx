@@ -107,7 +107,7 @@ class CreateForm extends Component<CreateFormProps, CreateFormState> {
     return (
       <Modal
         destroyOnClose
-        title="编辑文章"
+        title="新增文章"
         width={950}
         zIndex={100}
         style={{ position: 'relative' }}
@@ -122,7 +122,7 @@ class CreateForm extends Component<CreateFormProps, CreateFormState> {
         </FormItem>
         <FormItem {...this.formLayout} label="描述">
           {getFieldDecorator('des', {
-            rules: [{ required: true, message: '请输入至少三个字符！', min: 3 }],
+            rules: [{ required: true, message: '请输入3-27个字符!', min: 3 ,max: 27}],
           })(<TextArea style={{ "resize": "none" }} placeholder="请输入" />)}
         </FormItem>
         <FormItem {...this.formLayout} label="标签">

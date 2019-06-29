@@ -14,6 +14,7 @@ const { TextArea } = Input;
 const { Option } = Select;
 
 export interface fieldsValue {
+  id:number;
   title: string;
   des: string;
   tags_id: number[];
@@ -145,7 +146,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
         <FormItem {...this.formLayout} label="描述">
           {getFieldDecorator('des', {
             initialValue: values.des,
-            rules: [{ required: true, message: '请输入至少三个字符！', min: 3 }],
+            rules: [{ required: true, message: '请输入3-27个字符!', min: 3 ,max: 27}],
           })(<TextArea style={{ "resize": "none" }} placeholder="请输入" />)}
         </FormItem>
         <FormItem {...this.formLayout} label="标签">

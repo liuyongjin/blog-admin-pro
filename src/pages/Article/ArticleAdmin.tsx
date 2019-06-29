@@ -199,7 +199,7 @@ class TableList extends Component<TableListProps, TableListState> {
     filtersArg: Record<keyof TableListItem, string[]>,
     sorter: SorterResult<TableListItem>,
   ) => {
-    const { dispatch } = this.props;
+    // const { dispatch } = this.props;
     const { formValues } = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
@@ -217,11 +217,33 @@ class TableList extends Component<TableListProps, TableListState> {
     if (sorter.field) {
       params.sorter = `${sorter.field} ${sorter.order}`;
     }
-
-    dispatch({
-      type: 'article/fetch',
-      payload: params,
-    });
+    let oldPrams:any=this.state.params;
+    let values={};
+    //处理时间
+    if(oldPrams.create_date&&oldPrams.create_date.length>0){
+      values={
+        ...oldPrams,
+        ...params,
+        create_date: [
+          formatDate(oldPrams.create_date[0]),
+          formatDate(oldPrams.create_date[1])
+        ]
+      }
+    }else{
+      values={
+        ...oldPrams,
+        ...params,
+      }
+    }
+    this.setState({
+      params:values
+    },()=>{
+      this.init();
+    })
+    // dispatch({
+    //   type: 'article/fetch',
+    //   payload: params,
+    // });
   };
 
   handleFormReset = () => {
@@ -311,12 +333,16 @@ class TableList extends Component<TableListProps, TableListState> {
     form.validateFields((err, fieldsValue:any) => {
       if (err) return;
       const values: any = {
+        ...this.state.params,
         ...fieldsValue,
         create_date: [
           formatDate(fieldsValue.create_date[0]),
           formatDate(fieldsValue.create_date[1])
         ]
       };
+      // if(values.tags_id.length===0){
+      //   delete values.tags_id;
+      // }
       //保存搜索数据
       this.setState({
         params: {
