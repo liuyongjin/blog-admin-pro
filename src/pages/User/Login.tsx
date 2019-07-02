@@ -1,8 +1,7 @@
-import { Alert, Checkbox} from 'antd';
+import { Alert} from 'antd';
 import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
 import React, { Component } from 'react';
 
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Dispatch } from 'redux';
 import { FormComponentProps } from 'antd/es/form';
 import { connect } from 'dva';
@@ -12,57 +11,51 @@ import styles from './style.less';
 
 const { Tab, UserName, Password, Submit } = LoginComponents;
 
-interface PAGE_NAME_UPPER_CAMEL_CASEProps {
+interface LoginProps {
   dispatch: Dispatch<any>;
-  BLOCK_NAME_CAMEL_CASE: StateType;
+  login: StateType;
   submitting: boolean;
 }
-interface PAGE_NAME_UPPER_CAMEL_CASEState {
+interface LoginState {
   type: string;
-  autoLogin: boolean;
 }
-export interface FromDataType {
-  userName: string;
+export interface FormDataType {
+  username: string;
   password: string;
 }
 
 @connect(
   ({
-    BLOCK_NAME_CAMEL_CASE,
+    login,
     loading,
   }: {
-    BLOCK_NAME_CAMEL_CASE: StateType;
+    login: StateType;
     loading: {
       effects: {
         [key: string]: string;
       };
     };
   }) => ({
-    BLOCK_NAME_CAMEL_CASE,
-    submitting: loading.effects['BLOCK_NAME_CAMEL_CASE/login'],
+    login,
+    submitting: loading.effects['login/login'],
   }),
 )
-class PAGE_NAME_UPPER_CAMEL_CASE extends Component<
-  PAGE_NAME_UPPER_CAMEL_CASEProps,
-  PAGE_NAME_UPPER_CAMEL_CASEState
+class Login extends Component<
+  LoginProps,
+  LoginState
 > {
   loginForm: FormComponentProps['form'] | undefined | null = undefined;
 
-  state: PAGE_NAME_UPPER_CAMEL_CASEState = {
-    autoLogin: true,
+  state: LoginState = {
+    type:''
   };
 
-  changeAutoLogin = (e: CheckboxChangeEvent) => {
-    this.setState({
-      autoLogin: e.target.checked,
-    });
-  };
 
-  handleSubmit = (err: any, values: FromDataType) => {
+  handleSubmit = (err: any, values: FormDataType) => {
     if (!err) {
       const { dispatch } = this.props;
       dispatch({
-        type: 'BLOCK_NAME_CAMEL_CASE/login',
+        type: 'login/login',
         payload: {
           ...values,
         },
@@ -76,9 +69,8 @@ class PAGE_NAME_UPPER_CAMEL_CASE extends Component<
   );
 
   render() {
-    const { BLOCK_NAME_CAMEL_CASE, submitting } = this.props;
-    const { status, type: loginType } = BLOCK_NAME_CAMEL_CASE;
-    const { autoLogin } = this.state;
+    const { login, submitting } = this.props;
+    const { status } = login;
     return (
       <div className={styles.main}>
         <LoginComponents
@@ -90,42 +82,33 @@ class PAGE_NAME_UPPER_CAMEL_CASE extends Component<
         >
           <Tab key="account" tab="">
             {status === 'error' &&
-              loginType === 'account' &&
               !submitting &&
               this.renderMessage(
-                formatMessage({ id: 'BLOCK_NAME.login.message-invalid-credentials' }),
+                formatMessage({ id: 'login.login.message-invalid-credentials' }),
               )}
             <UserName
               name="username"
-              placeholder={`${formatMessage({ id: 'BLOCK_NAME.login.userName' })}: admin or user`}
+              placeholder={`${formatMessage({ id: 'login.login.username' })}`}
               rules={[
                 {
                   required: true,
-                  message: formatMessage({ id: 'BLOCK_NAME.userName.required' }),
+                  message: formatMessage({ id: 'login.username.required' }),
                 },
               ]}
             />
             <Password
               name="password"
-              placeholder={`${formatMessage({ id: 'BLOCK_NAME.login.password' })}: 123`}
+              placeholder={`${formatMessage({ id: 'login.login.password' })}`}
               rules={[
                 {
                   required: true,
-                  message: formatMessage({ id: 'BLOCK_NAME.password.required' }),
-                },
+                  message: formatMessage({ id: 'login.password.required' }),
+                }
               ]}
-              onPressEnter={() =>
-                this.loginForm && this.loginForm.validateFields(this.handleSubmit)
-              }
             />
           </Tab>
-          <div>
-            <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
-              <FormattedMessage id="BLOCK_NAME.login.remember-me" />
-            </Checkbox>
-          </div>
           <Submit loading={submitting}>
-            <FormattedMessage id="BLOCK_NAME.login.login" />
+            <FormattedMessage id="login.login" />
           </Submit>
         </LoginComponents>
       </div>
@@ -133,4 +116,4 @@ class PAGE_NAME_UPPER_CAMEL_CASE extends Component<
   }
 }
 
-export default PAGE_NAME_UPPER_CAMEL_CASE;
+export default Login;

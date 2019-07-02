@@ -1,5 +1,5 @@
 import { ConnectProps, ConnectState } from '@/models/connect';
-import { DefaultFooter, MenuDataItem, getMenuData, getPageTitle } from '@ant-design/pro-layout';
+import { MenuDataItem, getMenuData, getPageTitle } from '@ant-design/pro-layout';
 import DocumentTitle from 'react-document-title';
 import React from 'react';
 import SelectLang from '@/components/SelectLang';
@@ -9,6 +9,7 @@ import styles from './UserLayout.less';
 
 export interface UserLayoutProps extends ConnectProps {
   breadcrumbNameMap: { [path: string]: MenuDataItem };
+  locale: boolean;
 }
 
 const UserLayout: React.SFC<UserLayoutProps> = props => {
@@ -42,12 +43,11 @@ const UserLayout: React.SFC<UserLayoutProps> = props => {
         <div className={styles.content}>
           <div className={styles.top}>
             <div className={styles.header}>
-              <span className={styles.title}>Blog Admin</span>
+              <span className={styles.title}>Ng Blog Admin</span>
             </div>
           </div>
           {children}
         </div>
-        <DefaultFooter />
       </div>
     </DocumentTitle>
   );

@@ -14,7 +14,7 @@ export interface SettingModelType {
   };
 }
 
-const updateTheme = (newPrimaryColor?: string) => {
+const updateTheme = (newPrimaryColor?: string|any) => {
   const timeOut = 0;
   const hideMessage = message.loading('正在切换主题！', timeOut);
   themeColorClient.changeColor(newPrimaryColor).finally(() => hideMessage());

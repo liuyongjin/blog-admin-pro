@@ -1,12 +1,11 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 import { routerRedux } from 'dva/router';
-import { fakeAccountLogin} from './service';
+import { AccountLogin} from './service';
 import { getPageQuery, setAuthority,setToken } from '@/utils/utils';
 
 export interface StateType {
   status?: 'ok' | 'error';
-  // type?: string;
   currentAuthority?: 'user' | 'guest' | 'admin';
 }
 
@@ -27,7 +26,7 @@ export interface ModelType {
 }
 
 const Model: ModelType = {
-  namespace: 'BLOCK_NAME_CAMEL_CASE',
+  namespace: 'login',
 
   state: {
     status: undefined,
@@ -35,7 +34,7 @@ const Model: ModelType = {
 
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      const response = yield call(AccountLogin, payload);
       yield put({
         type: 'changeLoginStatus',
         payload: response,
@@ -64,7 +63,7 @@ const Model: ModelType = {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      if(!payload.data){
+      if(payload.errorCode !== 0){
         setAuthority('guest');
         setToken('');
         return {
@@ -77,7 +76,6 @@ const Model: ModelType = {
       return {
         ...state,
         status: payload.errorCode?'error':'ok',
-        // type: payload.type,
       };
     },
   },

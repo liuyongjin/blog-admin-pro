@@ -15,12 +15,7 @@ export default [
         Routes: ['src/pages/Authorized'],
         authority: ['admin', 'user'],
         routes: [
-            {
-                path: '/',
-                name: 'welcome',
-                icon: 'smile',
-                component: './Welcome',
-            },
+            { path: '/', redirect: '/article'},
             // article
             {
                 path: '/article',

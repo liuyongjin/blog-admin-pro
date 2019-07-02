@@ -2,7 +2,7 @@
 export function getAuthority(str?: string): string | string[] {
   // return localStorage.getItem('antd-pro-authority') || ['admin', 'user'];
   const authorityString =
-    typeof str === 'undefined' ? localStorage.getItem('antd-pro-authority') : str;
+    typeof str === 'undefined' ? localStorage.getItem('__NG__BLOG__ADMIN__AUTHORITY') : str;
   // authorityString could be admin, "admin", ["admin"]
   let authority;
   try {

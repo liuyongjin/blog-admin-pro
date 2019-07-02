@@ -25,7 +25,7 @@ export interface ModelType {
 }
 
 const Model: ModelType = {
-  namespace: 'login',
+  namespace: 'logout',
 
   state: {
     status: undefined,

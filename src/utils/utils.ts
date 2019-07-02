@@ -31,17 +31,17 @@ export function getPageQuery() {
 
 export function setAuthority(authority: string | string[]) {
   const proAuthority = typeof authority === 'string' ? [authority] : authority;
-  return localStorage.setItem('antd-pro-authority', JSON.stringify(proAuthority));
+  return localStorage.setItem('__NG__BLOG__ADMIN__AUTHORITY', JSON.stringify(proAuthority));
 }
 
-const TOKEN_KEY='__BLOG__ADMIN__TOKEN__';
+const TOKEN_KEY='__NG__BLOG__ADMIN__TOKEN__';
 
 export function setToken(token: string) {
-  return localStorage.setItem(TOKEN_KEY, JSON.stringify(token));
+  return localStorage.setItem(TOKEN_KEY, token);
 }
 
 export function getToken(){
-  return JSON.parse(window.localStorage.getItem(TOKEN_KEY)||'');
+  return localStorage.getItem(TOKEN_KEY)||'';
 }
 
 export function formatDate(value:any){
