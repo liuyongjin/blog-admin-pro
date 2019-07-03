@@ -8,10 +8,10 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
+import { BASE_URL } from '@/utils/utils';
 
 export interface GlobalHeaderRightProps extends ConnectProps {
   currentUser?: CurrentUser;
-  menu?: boolean;
 }
 
 class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
@@ -28,19 +28,11 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
 
       return;
     }
-    router.push(`/account/${key}`);
+    router.push(`/account`);
   };
 
   render(): React.ReactNode {
-    const { currentUser = {}, menu } = this.props;
-    if (!menu) {
-      return (
-        <span className={`${styles.action} ${styles.account}`}>
-          <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-          <span className={styles.name}>{currentUser.username}</span>
-        </span>
-      );
-    }
+    const { currentUser = {} } = this.props;
     const menuHeaderDropdown = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
         <Menu.Item key="settings">
@@ -55,11 +47,11 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
       </Menu>
     );
 
-    return currentUser && currentUser.username ? (
+    return currentUser && currentUser.nickname ? (
       <HeaderDropdown overlay={menuHeaderDropdown} placement="bottomCenter">
         <span className={`${styles.action} ${styles.account}`}>
-          <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-          <span className={styles.name}>{currentUser.username}</span>
+          <Avatar size="small" className={styles.avatar} src={BASE_URL+currentUser.avatar} alt="avatar" />
+          <span className={styles.name}>{currentUser.nickname}</span>
         </span>
       </HeaderDropdown>
     ) : (

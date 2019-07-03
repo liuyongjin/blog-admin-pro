@@ -6,7 +6,6 @@ import { TableListType } from './data.d';
 
 export interface StateType {
   tag: Array<any>;
-  tag_current:number;
   data: TableListType;
 }
 
@@ -30,7 +29,6 @@ export interface ModelType {
   reducers: {
     save: Reducer<StateType>;
     saveTag: Reducer<StateType>;
-    addTagCurrent: Reducer<StateType>;
   };
 }
 
@@ -38,7 +36,6 @@ const Model: ModelType = {
   namespace: 'article',
 
   state: {
-    tag_current:1,
     tag: [],
     data: {
       list: [],
@@ -54,10 +51,9 @@ const Model: ModelType = {
         payload: response,
       });
     },
-    *fetchTag({}, { call, put,select }) {
-      const current = yield select((state:any) => state.article.tag_current);
-      yield put({type: 'addTagCurrent'});
-      const response = yield call(queryTag,{current:current});
+    *fetchTag({}, { call, put}) {
+      //默认查出所有标签
+      const response = yield call(queryTag,{pageSize:1000});
       yield put({
         type: 'saveTag',
         payload: response,
@@ -71,27 +67,26 @@ const Model: ModelType = {
       const response = yield call(addArticle, payload);
       callback && callback(response);
     },
-    *del({ payload ,callback}, { call, put }) {
+    *del({ payload ,callback}, { call }) {
       yield call(delArticle, payload);
       callback && callback();
     },
-    *bdel({ payload,callback }, { call, put }) {
+    *bdel({ payload,callback }, { call }) {
       yield call(bdelArticle, payload);
       callback && callback();
     },
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call}) {
       const response = yield call(updateArticle, payload);
       callback && callback(response);
     },
   },
 
   reducers: {
-    save(state:any, action) {
+    save(state, action) {
       return {
         tag: [
           ...(state as StateType).tag
         ],
-        tag_current:state.tag_current,
         data: {
           list: action.payload.data.data,
           pagination: {
@@ -102,28 +97,15 @@ const Model: ModelType = {
         },
       };
     },
-    saveTag(state:any, action) {
+    saveTag(state, action) {
       return {
         ...state,
-        tag_current:state.tag_current,
-        tag: state.tag.concat(action.payload.data.data),
+        tag: action.payload.data.data,
         data: {
           ...(state as StateType).data
         }
       };
     },
-    addTagCurrent(state:any){
-      return {
-        ...state,
-        tag: [
-          ...(state as StateType).tag
-        ],
-        data: {
-          ...(state as StateType).data
-        },
-        tag_current:state.tag_current+1
-      }
-    }
   },
 };
 

@@ -7,6 +7,7 @@ import SelectLang from '../SelectLang';
 import { connect } from 'dva';
 import { formatMessage } from 'umi-plugin-react/locale';
 import styles from './index.less';
+import router from 'umi/router';
 
 export type SiderTheme = 'light' | 'dark';
 export interface GlobalHeaderRightProps extends ConnectProps {
@@ -30,24 +31,27 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = props => {
           id: 'component.globalHeader.search',
         })}
         dataSource={[
-          formatMessage({
-            id: 'component.globalHeader.search.example1',
-          }),
-          formatMessage({
-            id: 'component.globalHeader.search.example2',
-          }),
-          formatMessage({
-            id: 'component.globalHeader.search.example3',
-          }),
+          {
+            value: '/article',
+            text: '文章管理'
+          }, {
+            value: '/tag',
+            text: '标签管理'
+          }, {
+            value: '/account',
+            text: '个人页'
+          },
         ]}
         onSearch={value => {
-          console.log('input', value);
+          if (['/article', '/tag', '/account'].indexOf(value) !== -1) {
+            router.push(value);
+          }
         }}
-        onPressEnter={value => {
-          console.log('enter', value);
-        }}
+        // onPressEnter={value => {
+        //   // console.log('enter', value);
+        // }}
       />
-      <Avatar menu={true}/>
+      <Avatar />
       <SelectLang className={styles.action} />
     </div>
   );

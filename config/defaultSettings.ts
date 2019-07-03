@@ -54,7 +54,7 @@ export default {
   menu: {
     locale: true,
   },
-  title: 'ng-blog-admin',
+  title: 'blog-admin-pro',
   pwa: false,
   iconfontUrl: '',
 } as DefaultSettings;

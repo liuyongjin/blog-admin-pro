@@ -43,7 +43,7 @@ const UserLayout: React.SFC<UserLayoutProps> = props => {
         <div className={styles.content}>
           <div className={styles.top}>
             <div className={styles.header}>
-              <span className={styles.title}>Ng Blog Admin</span>
+              <span className={styles.title}>Blog Admin Pro</span>
             </div>
           </div>
           {children}

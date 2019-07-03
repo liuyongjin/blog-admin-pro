@@ -5,5 +5,6 @@ export default {
   'menu.tag': 'Tag Admin',
   'menu.account': 'Account',
   'menu.account.settings': 'Account Settings',
-  'menu.account.logout': 'Logout'
+  'menu.account.logout': 'Logout',
+  'menu.system': 'System Settings'
 };

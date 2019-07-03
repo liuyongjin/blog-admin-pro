@@ -1,0 +1,39 @@
+@import '~antd/es/style/themes/default.less';
+
+.main {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 700px;
+  min-height: calc(100vh - 112px);
+  padding-top: 16px;
+  padding-bottom: 16px;
+  background-color: @menu-bg;
+  :global {
+    .ant-list-split .ant-list-item:last-child {
+      border-bottom: 1px solid @border-color-split;
+    }
+    .ant-list-item {
+      padding-top: 14px;
+      padding-bottom: 14px;
+    }
+  }
+}
+:global {
+  // 密码强度
+  font.strong {
+    color: @success-color;
+  }
+  font.medium {
+    color: @warning-color;
+  }
+  font.weak {
+    color: @error-color;
+  }
+}
+
+@media screen and (max-width: @screen-md) {
+  .main {
+    flex-direction: column;
+  }
+}

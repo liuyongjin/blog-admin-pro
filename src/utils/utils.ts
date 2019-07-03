@@ -31,10 +31,10 @@ export function getPageQuery() {
 
 export function setAuthority(authority: string | string[]) {
   const proAuthority = typeof authority === 'string' ? [authority] : authority;
-  return localStorage.setItem('__NG__BLOG__ADMIN__AUTHORITY', JSON.stringify(proAuthority));
+  return localStorage.setItem('__BLOG__ADMIN__PRO__AUTHORITY', JSON.stringify(proAuthority));
 }
 
-const TOKEN_KEY='__NG__BLOG__ADMIN__TOKEN__';
+const TOKEN_KEY='__BLOG__ADMIN__PRO__TOKEN__';
 
 export function setToken(token: string) {
   return localStorage.setItem(TOKEN_KEY, token);

@@ -5,5 +5,6 @@ export default {
   'menu.tag': '标签管理',
   'menu.account': '个人页',
   'menu.account.settings': '个人设置',
-  'menu.account.logout': '退出登录'
+  'menu.account.logout': '退出登录',
+  'menu.system': '系统设置'
 };

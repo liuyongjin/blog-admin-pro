@@ -15,7 +15,7 @@ export default [
         Routes: ['src/pages/Authorized'],
         authority: ['admin', 'user'],
         routes: [
-            { path: '/', redirect: '/article'},
+            { path: '/', redirect: '/article' },
             // article
             {
                 path: '/article',
@@ -24,11 +24,18 @@ export default [
                 component: './Article/ArticleAdmin',
             },
             // tag
-               {
+            {
                 path: '/tag',
                 icon: 'windows',
                 name: 'tag',
                 component: './Tag/TagAdmin',
+            },
+            // account
+            {
+                path: '/account',
+                icon: 'user',
+                name: 'account',
+                component: './Account/AccountSettings',
             },
         ],
     },

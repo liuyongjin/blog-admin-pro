@@ -90,15 +90,16 @@ class CreateForm extends Component<CreateFormProps, CreateFormState> {
       handleAdd(values);
     });
   };
-  tagScrollHandle=(e:any)=>{
-    e.persist();
-    const { target } = e;
-    if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
-      this.props.dispatch({
-        type: 'article/fetchTag',
-      });
-    }
-  }
+  // tagScrollHandle=(e:any)=>{
+  //   e.persist();
+  //   const { target } = e;
+  //判断滚动到底部
+  //   if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+  //     this.props.dispatch({
+  //       type: 'article/fetchTag',
+  //     });
+  //   }
+  // }
   render() {
     const { modalVisible, form,  handleModalVisible, article } = this.props;
     const { getFieldDecorator } = form;
@@ -129,7 +130,7 @@ class CreateForm extends Component<CreateFormProps, CreateFormState> {
           {getFieldDecorator('tags_id', {
             rules: [{ required: true, message: '请选择标签' }],
           })(
-            <Select mode="multiple" onPopupScroll={this.tagScrollHandle} placeholder="请选择" style={{ width: '100%' }}>
+            <Select mode="multiple" placeholder="请选择" style={{ width: '100%' }}>
               {article.tag.map((v: any) => {
                 return (
                   <Option key={v.id} value={v.id}>{v.name}</Option>

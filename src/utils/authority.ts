@@ -2,7 +2,7 @@
 export function getAuthority(str?: string): string | string[] {
   // return localStorage.getItem('antd-pro-authority') || ['admin', 'user'];
   const authorityString =
-    typeof str === 'undefined' ? localStorage.getItem('__NG__BLOG__ADMIN__AUTHORITY') : str;
+    typeof str === 'undefined' ? localStorage.getItem('__BLOG__ADMIN__PRO__AUTHORITY') : str;
   // authorityString could be admin, "admin", ["admin"]
   let authority;
   try {
@@ -23,7 +23,7 @@ export function getAuthority(str?: string): string | string[] {
   return authority;
 }
 
-export function setAuthority(authority: string | string[]): void {
-  const proAuthority = typeof authority === 'string' ? [authority] : authority;
-  return localStorage.setItem('antd-pro-authority', JSON.stringify(proAuthority));
-}
+// export function setAuthority(authority: string | string[]): void {
+//   const proAuthority = typeof authority === 'string' ? [authority] : authority;
+//   return localStorage.setItem('__BLOG__ADMIN__PRO__AUTHORITY', JSON.stringify(proAuthority));
+// }
