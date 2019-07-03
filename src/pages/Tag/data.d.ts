@@ -1,10 +1,12 @@
 export interface TableListItem {
-  disabled?:boolean;
+  // disabled?:boolean;
+  id?: number;
   create_time: string;
   des: string;
-  id?: number;
   name: string;
   update_time: string;
+  color:string;
+  bg_color:string;
 }
 
 export interface TableListPagination {

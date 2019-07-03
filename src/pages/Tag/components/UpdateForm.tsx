@@ -10,6 +10,8 @@ interface fieldsValue{
   id:any;
   name: string;
   des: string;
+  color:string;
+  bg_color:string;
 }
 
 interface CreateFormProps extends FormComponentProps {
@@ -30,14 +32,14 @@ const UpdateForm: React.SFC<CreateFormProps> = props => {
   };
 
   const formLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 17 },
+    labelCol: { span: 4 },
+    wrapperCol: { span: 16 },
   };
 
   return (
     <Modal
       destroyOnClose
-      title="新建标签"
+      title="编辑标签"
       visible={updateModalVisible}
       onOk={okHandle}
       onCancel={() => handleUpdateModalVisible()}
@@ -52,6 +54,18 @@ const UpdateForm: React.SFC<CreateFormProps> = props => {
         {form.getFieldDecorator('des', {
           rules: [{ required: true, message: '请输入至少三个字符的描述!', min: 3 }],
           initialValue:values.des
+        })(<Input placeholder="请输入" />)}
+      </FormItem>
+      <FormItem {...formLayout} label="字体颜色">
+        {form.getFieldDecorator('color', {
+          rules: [{ required: true, message: '请输入字体颜色!' }],
+          initialValue:values.color
+        })(<Input placeholder="请输入" />)}
+      </FormItem>
+      <FormItem {...formLayout} label="背景颜色">
+        {form.getFieldDecorator('bg_color', {
+          rules: [{ required: true, message: '请输入背景颜色!' }],
+          initialValue:values.bg_color
         })(<Input placeholder="请输入" />)}
       </FormItem>
     </Modal>
