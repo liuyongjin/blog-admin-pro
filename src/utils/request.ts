@@ -5,7 +5,7 @@
 import { extend } from 'umi-request';
 import { message } from 'antd';
 import router from 'umi/router';
-import {getToken} from '@/utils/utils';
+import {getToken,BASE_URL} from '@/utils/utils';
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -23,7 +23,7 @@ const codeMessage = {
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
 };
-const base_url = "http://blog.com/api/v1"
+const base_url = `${BASE_URL}/api/v1`
 /**
  * 异常处理程序
  */

@@ -26,7 +26,7 @@ import CreateForm,{fieldsValue} from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from '@/components/StandardTable';
 import UpdateForm from './components/UpdateForm';
 import { TableListItem, TableListPagination, TableListParams } from './data.d';
-import { formatDate } from '@/utils/utils';
+import { formatDate,BASE_URL } from '@/utils/utils';
 
 import styles from './style.less';
 
@@ -116,7 +116,7 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'main_img',
       align: 'center',
       render(val:any) {
-        return <img style={{width:100,height:100}} src={'http://blog.com'+val} alt="图片"/>;
+        return <img style={{width:100,height:100}} src={BASE_URL+val} alt="图片"/>;
       }
     }, {
       title: '点赞数',
