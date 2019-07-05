@@ -69,7 +69,7 @@ class CreateForm extends Component<CreateFormProps, CreateFormState> {
     fileList = fileList.map(file => {
       if (file.response&&file.response.data) {
         // Component will show file.url as link
-        file.url = file.response.data.file_url;
+        file.url = BASE_URL+file.response.data.file_url;
       }
       return file;
     });
@@ -82,7 +82,7 @@ class CreateForm extends Component<CreateFormProps, CreateFormState> {
       if (err) return;
       let values:fieldsValue={
         ...fieldsValue,
-        main_img:fieldsValue.main_img[0].url
+        main_img:fieldsValue.main_img[0].url.replace(BASE_URL,'')
       }
       // console.log(values);
       // return;

@@ -283,13 +283,15 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
-  handleAdd = (fields: { name: string; des: string }) => {
+  handleAdd = (fields: Partial<TableListItem>) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'tag/add',
       payload: {
         name: fields.name,
         des: fields.des,
+        color:fields.color,
+        bg_color:fields.bg_color
       },
       callback: (response:any) => {
         message.success(response.msg);
@@ -306,6 +308,8 @@ class TableList extends Component<TableListProps, TableListState> {
       payload: {
         name: fields.name,
         des: fields.des,
+        color:fields.color,
+        bg_color:fields.bg_color,
         id: fields.id,
       },
       callback: (response:any) => {

@@ -89,7 +89,8 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
     fileList = fileList.map(file => {
       if (file.response&&file.response.data) {
         // Component will show file.url as link
-        file.url = file.response.data.file_url;
+        file.url = BASE_URL+file.response.data.file_url;
+        // file.name = file.url&&file.url.split('/')[file.url.split('/').length-1];
       }
       return file;
     });
