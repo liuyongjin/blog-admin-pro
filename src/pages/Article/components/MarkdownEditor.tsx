@@ -1,6 +1,5 @@
 import { FormComponentProps } from 'antd/es/form';
 import React, { Component } from 'react';
-const marked=require('marked');
 import Editor from 'for-editor';
 
 interface MarkdownEditorProps extends FormComponentProps {
