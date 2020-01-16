@@ -6,7 +6,7 @@ English | [简体中文](./README.md)
 
 >  The development environment windows
 
->  The deployment environment linux+nginx address：[https://admin.liuyongjin.cn](https://admin.liuyongjin.cn)
+>  The deployment environment linux+nginx address：[http://admin.liuyongjin.cn](http://admin.liuyongjin.cn)
 
 >  Relevant project address：
 

@@ -6,7 +6,7 @@
 
 >  开发环境 windows
 
->  部署环境 linux+nginx 地址：[https://admin.liuyongjin.cn](https://admin.liuyongjin.cn)
+>  部署环境 linux+nginx 地址：[http://admin.liuyongjin.cn](http://admin.liuyongjin.cn)
 
 >  相关项目地址：
 
